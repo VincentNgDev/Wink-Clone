@@ -1,0 +1,29 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        Android: re-declaring "Theme.Clonedwink" here means this whole style definition
+        *replaces* the one in values/themes.xml when the system is in dark mode — style
+        resources don't merge across resource-qualifier folders, so every item from the light
+        version has to be repeated here too (only `android:windowLightStatusBar` actually
+        differs). Both files point at the same semantic color names (e.g. @color/background);
+        it's values-night/colors.xml that supplies the dark value for that name, which is what
+        keeps the two theme files from needing separate hardcoded hex colors.
+    -->
+    <style name="Theme.Clonedwink" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_purple</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/brand_purple_dark</item>
+        <item name="colorSecondary">@color/brand_pink</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryVariant">@color/brand_pink_dark</item>
+        <item name="colorTertiary">@color/brand_teal</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/on_surface</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <!-- Left at its default (false) here: a dark background needs light status-bar
+             icons, unlike the light theme, which turns this on. -->
+    </style>
+</resources>

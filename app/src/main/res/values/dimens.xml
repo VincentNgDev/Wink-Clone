@@ -1,0 +1,97 @@
+<resources>
+    <dimen name="carousel_height">240dp</dimen>
+    <dimen name="carousel_text_padding">20dp</dimen>
+    <dimen name="landing_content_padding">24dp</dimen>
+
+    <!-- Modern "peeking card" carousel (ui/landing/LandingScreen.kt's SlideCarousel): the pager
+         is padded on each side so the previous/next cards peek in from the edges, plus a
+         further gap between cards via HorizontalPager's pageSpacing. -->
+    <dimen name="carousel_peek_padding">28dp</dimen>
+    <dimen name="carousel_page_margin">12dp</dimen>
+    <dimen name="carousel_card_corner_radius">24dp</dimen>
+    <dimen name="carousel_card_elevation">6dp</dimen>
+
+    <!-- Dot indicator (ui/landing/LandingScreen.kt's PageIndicator): unselected dots are small
+         circles; the selected dot animates to a wider pill within the same bound width, so the
+         indicator "expands" for the active page instead of just recoloring a same-size dot. -->
+    <dimen name="carousel_dot_bound_width">24dp</dimen>
+    <dimen name="carousel_dot_height">8dp</dimen>
+    <dimen name="carousel_dot_spacing">3dp</dimen>
+
+    <!-- Pill-shaped call-to-action button. -->
+    <dimen name="cta_height">56dp</dimen>
+    <dimen name="cta_corner_radius">28dp</dimen>
+
+    <!-- Glassmorphism landing screen (ui/landing/LandingScreen.kt): frosted icon badge on each
+         slide card, its border stroke, and the soft decorative blobs floated behind the
+         carousel for depth. -->
+    <dimen name="glass_badge_size">56dp</dimen>
+    <dimen name="glass_badge_icon_size">28dp</dimen>
+    <dimen name="glass_border_width">1dp</dimen>
+    <dimen name="blob_size_large">220dp</dimen>
+    <dimen name="blob_size_small">140dp</dimen>
+
+    <!-- Home screen (ui/home/HomeScreen.kt): shared horizontal padding for every section's
+         body text/headers, and the vertical gap left between one section and the next. -->
+    <dimen name="home_content_padding">20dp</dimen>
+    <dimen name="home_section_spacing">28dp</dimen>
+    <dimen name="home_section_header_spacing">12dp</dimen>
+
+    <!-- Loyalty points card (ui/home/HomeScreen.kt's HomeTopSection): a white rounded card
+         that overlaps the bottom edge of the pink gradient header, mirroring the reference
+         screenshot's "floating card" look. -->
+    <dimen name="home_header_gradient_height">150dp</dimen>
+    <dimen name="loyalty_card_corner_radius">20dp</dimen>
+    <dimen name="loyalty_card_elevation">8dp</dimen>
+    <dimen name="loyalty_card_padding">20dp</dimen>
+    <dimen name="loyalty_card_overlap">28dp</dimen>
+    <dimen name="loyalty_divider_height">28dp</dimen>
+
+    <!-- Quick-link tiles (ui/home/HomeComponents.kt's QuickLinkTile): Bus/Train/MRT Map/More. -->
+    <dimen name="quick_link_tile_size">60dp</dimen>
+    <dimen name="quick_link_icon_size">28dp</dimen>
+    <dimen name="quick_link_corner_radius">16dp</dimen>
+
+    <!-- "Friends of WINK+" partner logo row (ui/home/HomeComponents.kt's PartnerCard). -->
+    <dimen name="partner_card_width">84dp</dimen>
+    <dimen name="partner_logo_size">64dp</dimen>
+    <dimen name="partner_logo_corner_radius">16dp</dimen>
+    <dimen name="partner_card_spacing">14dp</dimen>
+
+    <!-- Promo banner carousel (ui/home/HomeSections.kt's PromoBannerCarousel) — a wider,
+         shorter card than the landing screen's onboarding carousel. -->
+    <dimen name="promo_banner_height">160dp</dimen>
+    <dimen name="promo_banner_corner_radius">20dp</dimen>
+    <dimen name="promo_banner_peek_padding">20dp</dimen>
+    <dimen name="promo_banner_page_margin">10dp</dimen>
+
+    <!-- Station selector bar (ui/home/HomeComponents.kt's StationSelectorBar). -->
+    <dimen name="station_bar_corner_radius">16dp</dimen>
+    <dimen name="station_bar_padding">16dp</dimen>
+
+    <!-- Place cards — dining deals / dinner nearby (ui/home/HomeComponents.kt's PlaceCardView). -->
+    <dimen name="place_card_width">220dp</dimen>
+    <dimen name="place_card_image_height">130dp</dimen>
+    <dimen name="place_card_corner_radius">16dp</dimen>
+    <dimen name="place_card_spacing">14dp</dimen>
+
+    <!-- Feature cards — exciting events / hot deals (ui/home/HomeComponents.kt's FeatureCardView),
+         deliberately larger than the partner_logo_size square above. -->
+    <dimen name="feature_card_size">170dp</dimen>
+    <dimen name="feature_card_corner_radius">16dp</dimen>
+    <dimen name="feature_card_spacing">12dp</dimen>
+
+    <!-- Media cards — news/highlights (landscape) and movies (portrait), same
+         ui/home/HomeComponents.kt's MediaCardView at two different fixed sizes. -->
+    <dimen name="media_card_landscape_width">220dp</dimen>
+    <dimen name="media_card_landscape_height">130dp</dimen>
+    <dimen name="media_card_portrait_width">130dp</dimen>
+    <dimen name="media_card_portrait_height">190dp</dimen>
+    <dimen name="media_card_corner_radius">14dp</dimen>
+    <dimen name="media_card_spacing">12dp</dimen>
+
+    <!-- Bottom navigation bar (ui/home/HomeComponents.kt's HomeBottomNavBar). -->
+    <dimen name="bottom_nav_height">76dp</dimen>
+    <dimen name="bottom_nav_pill_corner_radius">24dp</dimen>
+    <dimen name="bottom_nav_icon_size">24dp</dimen>
+</resources>

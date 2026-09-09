@@ -1,0 +1,40 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        Android: this is the app's single theme, applied in AndroidManifest.xml via
+        android:theme="@style/Theme.Clonedwink". `Theme.Material3.DayNight.NoActionBar` is the
+        Material 3 base theme (from the `material` library) — "DayNight" means it automatically
+        swaps to its dark variant when the system is in dark mode (paired with
+        values-night/colors.xml below), and "NoActionBar" removes the default top app bar since
+        the landing screen draws its own title TextView instead.
+
+        Every `item` below points at a semantic color name from colors.xml (not a raw hex) —
+        those names resolve differently in light vs. dark mode via values-night/colors.xml.
+        values-night/themes.xml re-declares this same style (style resources don't merge
+        across resource-qualifier folders) so it can flip the one item that genuinely differs
+        by mode (the status bar icon color) while sharing these same color names.
+    -->
+    <style name="Theme.Clonedwink" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color — used for the CTA button, selected carousel dot, etc. -->
+        <item name="colorPrimary">@color/brand_purple</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/brand_purple_dark</item>
+        <!-- Secondary brand color — the warm pink accent from the carousel palette. -->
+        <item name="colorSecondary">@color/brand_pink</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryVariant">@color/brand_pink_dark</item>
+        <!-- Tertiary accent — the teal used on the third carousel slide. -->
+        <item name="colorTertiary">@color/brand_teal</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <!-- Screen background vs. raised surfaces (cards) — deliberately distinct so a
+             MaterialCardView reads as "lifted" above the background instead of blending in. -->
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/on_surface</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+        <!-- Status bar matches the screen background for an edge-to-edge, immersive feel
+             instead of a separate colored bar at the top. -->
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+    </style>
+</resources>

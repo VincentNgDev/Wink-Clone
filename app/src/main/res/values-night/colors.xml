@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android: a `values-night/` resource file is only picked up when the device is in dark mode
+    (the `-night` qualifier). Every color name declared here must already exist in
+    values/colors.xml — this file doesn't add new colors, it *overrides* the light-mode value
+    for the same name, so anything referencing e.g. @color/surface gets this dark version
+    automatically instead of the file needing an `if (dark mode)` check anywhere in Kotlin.
+-->
+<resources>
+    <color name="surface">#FF1C1B22</color>
+    <color name="background">#FF121016</color>
+    <color name="on_surface">#FFF3EFF6</color>
+    <color name="on_surface_variant">#FFC8C3D1</color>
+</resources>
