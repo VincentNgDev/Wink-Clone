@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ContactSupport
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.CardGiftcard
@@ -54,10 +53,12 @@ import androidx.compose.ui.unit.sp
 import com.example.clonedwink.R
 import com.example.clonedwink.data.model.home.QuickLinkItem
 
-// Android/Kotlin: small, reusable pieces shared across the home screen — a quick-link tile
-// and its "More" bottom sheet, the loyalty points card, the station selector bar, the bottom
-// nav bar, section headers, and the brand-gradient placeholder used by every card that has no
-// real photo yet. ui/home/HomeSections.kt builds on top of these for each horizontally
+// Android/Kotlin: small, home-screen-specific pieces — a quick-link tile and its "More" bottom
+// sheet, the loyalty points card, the station selector bar, the bottom nav bar, and the
+// brand-gradient placeholder used by every card that has no real photo yet. The truly
+// cross-screen pieces that used to live in this file (SectionHeader) moved to
+// `ui/components` once something outside `ui/home` needed them too — see that package's
+// files for why. ui/home/HomeSections.kt builds on top of these for each horizontally
 // scrollable row; ui/home/HomeScreen.kt assembles the whole screen from both files.
 
 /**
@@ -95,49 +96,6 @@ fun quickLinkIconFor(id: String): ImageVector = when (id) {
     "feedback" -> Icons.Filled.Feedback
     "contact_us" -> Icons.AutoMirrored.Filled.ContactSupport
     else -> Icons.Filled.Apps
-}
-
-/**
- * A section title with an optional trailing "See more" link, used above every horizontally
- * scrollable row on the home screen.
- */
-@Composable
-fun SectionHeader(title: String, modifier: Modifier = Modifier, onSeeMoreClick: (() -> Unit)? = null) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.home_content_padding)),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = title,
-            color = colorResource(R.color.on_surface),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-        )
-        if (onSeeMoreClick != null) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable(onClick = onSeeMoreClick),
-            ) {
-                Text(
-                    text = stringResource(R.string.home_see_more),
-                    color = colorResource(R.color.brand_pink),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = null,
-                    tint = colorResource(R.color.brand_pink),
-                    modifier = Modifier
-                        .padding(start = 2.dp)
-                        .size(16.dp),
-                )
-            }
-        }
-    }
 }
 
 /** One Bus/Train/MRT Map/More tile: a rounded square icon chip with its label underneath. */

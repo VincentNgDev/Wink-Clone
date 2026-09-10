@@ -1,9 +1,6 @@
 package com.example.clonedwink.ui.home
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,8 +20,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,39 +33,44 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.clonedwink.R
 import com.example.clonedwink.data.model.home.FeatureCard
 import com.example.clonedwink.data.model.home.MediaCard
 import com.example.clonedwink.data.model.home.PartnerItem
 import com.example.clonedwink.data.model.home.PlaceCard
 import com.example.clonedwink.data.model.home.PromoBanner
-import kotlinx.coroutines.delay
+import com.example.clonedwink.ui.components.CarouselAutoScroll
+import com.example.clonedwink.ui.components.CarouselDotIndicator
+import com.example.clonedwink.ui.components.HorizontalCardSection
 
 // Android/Kotlin: every horizontally scrollable row on the home screen (partners, the promo
 // banner carousel, place cards, feature cards, media cards) plus the card composable each one
 // lays out. All of them take plain data-layer lists in and fire plain lambdas out — see
 // LandingScreen.kt's file comment for why that "only ever talk to the ViewModel via a snapshot
 // + callbacks" split matters here too. HomeScreen.kt assembles these into the full page.
+//
+// PartnerRow, PlaceCardRow, FeatureCardRow, and MediaCardRow all delegate to
+// `ui/components/HorizontalCardSection.kt` for their "title + LazyRow" shape — each one only
+// describes its own per-item card. PromoBannerCarousel delegates its auto-scroll and dot
+// indicator to `ui/components/CarouselAutoScroll.kt` and `CarouselDotIndicator.kt`, the same
+// shared pieces LandingScreen.kt's onboarding carousel uses.
 
 private const val PROMO_AUTO_SCROLL_INTERVAL_MS = 5000L
 
 @Composable
-fun PartnerRow(partners: List<PartnerItem>, modifier: Modifier = Modifier) {
-    LazyRow(
+fun PartnerRow(title: String, partners: List<PartnerItem>, modifier: Modifier = Modifier) {
+    // Kotlin: `partners.withIndex()` pairs each item with its position up front (as
+    // `IndexedValue<PartnerItem>`), so `PartnerCard` below can look up its placeholder gradient
+    // color by position without re-scanning the list per item the way `list.indexOf(item)`
+    // would.
+    HorizontalCardSection(
+        title = title,
+        items = partners.withIndex().toList(),
+        itemSpacing = dimensionResource(R.dimen.partner_card_spacing),
+        key = { it.value.id },
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.home_content_padding)),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.partner_card_spacing)),
-    ) {
-        // Kotlin: `itemsIndexed`-style access via `items(partners) { }` plus `partners.indexOf`
-        // would work but re-scans the list per item; instead this loops with `withIndex()` up
-        // front so each card's placeholder gradient color (see placeholderBrandGradient) is
-        // cheap to look up.
-        items(partners.withIndex().toList(), key = { it.value.id }) { (index, partner) ->
-            PartnerCard(partner = partner, colorIndex = index)
-        }
+    ) { (index, partner) ->
+        PartnerCard(partner = partner, colorIndex = index)
     }
 }
 
@@ -125,21 +123,7 @@ fun PromoBannerCarousel(banners: List<PromoBanner>, modifier: Modifier = Modifie
     if (banners.isEmpty()) return
 
     val pagerState = rememberPagerState(pageCount = { banners.size })
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    // Android: same pause-while-backgrounded auto-scroll pattern as LandingScreen's
-    // SlideCarousel — see that composable's comment for the full explanation of why
-    // `repeatOnLifecycle(STARTED)` is used instead of a bare `while(true)` loop.
-    LaunchedEffect(banners.size, lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            if (banners.size <= 1) return@repeatOnLifecycle
-            while (true) {
-                delay(PROMO_AUTO_SCROLL_INTERVAL_MS)
-                val nextPage = (pagerState.currentPage + 1) % banners.size
-                pagerState.animateScrollToPage(nextPage)
-            }
-        }
-    }
+    CarouselAutoScroll(pagerState = pagerState, itemCount = banners.size, intervalMs = PROMO_AUTO_SCROLL_INTERVAL_MS)
 
     Column(modifier = modifier) {
         HorizontalPager(
@@ -155,29 +139,16 @@ fun PromoBannerCarousel(banners: List<PromoBanner>, modifier: Modifier = Modifie
 
         if (banners.size > 1) {
             Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                repeat(banners.size) { index ->
-                    val selected = index == pagerState.currentPage
-                    val width by animateDpAsState(
-                        targetValue = if (selected) 20.dp else 6.dp,
-                        animationSpec = tween(durationMillis = 250),
-                        label = "promoIndicatorWidth",
-                    )
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 3.dp)
-                            .width(width)
-                            .height(6.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(
-                                if (selected) colorResource(R.color.brand_pink) else colorResource(R.color.chip_background),
-                            ),
-                    )
-                }
-            }
+            CarouselDotIndicator(
+                pageCount = banners.size,
+                currentPage = pagerState.currentPage,
+                selectedColor = colorResource(R.color.brand_pink),
+                unselectedColor = colorResource(R.color.chip_background),
+                selectedWidth = dimensionResource(R.dimen.promo_indicator_selected_width),
+                unselectedWidth = dimensionResource(R.dimen.promo_indicator_unselected_width),
+                dotHeight = dimensionResource(R.dimen.promo_indicator_dot_height),
+                dotSpacing = dimensionResource(R.dimen.carousel_dot_spacing),
+            )
         }
     }
 }
@@ -221,16 +192,17 @@ private fun PromoBannerCard(banner: PromoBanner, colorIndex: Int) {
 
 @Composable
 fun PlaceCardRow(title: String, places: List<PlaceCard>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        SectionHeader(title = title, onSeeMoreClick = {})
-        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.home_section_header_spacing)))
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.home_content_padding)),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.place_card_spacing)),
-        ) {
-            items(places, key = { it.id }) { place -> PlaceCardView(place = place) }
-        }
-    }
+    HorizontalCardSection(
+        title = title,
+        items = places,
+        itemSpacing = dimensionResource(R.dimen.place_card_spacing),
+        key = { it.id },
+        modifier = modifier,
+        // Android: dining-deal/dinner-nearby rows show a "See more" link (even though it's a
+        // no-op today — see HomeBottomNavTab's comment for the same "nothing built yet" reasoning);
+        // FeatureCardRow/MediaCardRow below intentionally don't, matching the reference screenshots.
+        onSeeMoreClick = {},
+    ) { place -> PlaceCardView(place = place) }
 }
 
 @Composable
@@ -373,17 +345,14 @@ private fun PlaceCardView(place: PlaceCard) {
 
 @Composable
 fun FeatureCardRow(title: String, features: List<FeatureCard>, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        SectionHeader(title = title)
-        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.home_section_header_spacing)))
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.home_content_padding)),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.feature_card_spacing)),
-        ) {
-            items(features, key = { it.id }) { feature ->
-                FeatureCardView(feature = feature, colorIndex = features.indexOf(feature))
-            }
-        }
+    HorizontalCardSection(
+        title = title,
+        items = features.withIndex().toList(),
+        itemSpacing = dimensionResource(R.dimen.feature_card_spacing),
+        key = { it.value.id },
+        modifier = modifier,
+    ) { (index, feature) ->
+        FeatureCardView(feature = feature, colorIndex = index)
     }
 }
 
@@ -431,17 +400,14 @@ fun MediaCardRow(
     cardHeight: Dp,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        SectionHeader(title = title)
-        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.home_section_header_spacing)))
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.home_content_padding)),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.media_card_spacing)),
-        ) {
-            items(mediaCards, key = { it.id }) { media ->
-                MediaCardView(media = media, colorIndex = mediaCards.indexOf(media), cardWidth = cardWidth, cardHeight = cardHeight)
-            }
-        }
+    HorizontalCardSection(
+        title = title,
+        items = mediaCards.withIndex().toList(),
+        itemSpacing = dimensionResource(R.dimen.media_card_spacing),
+        key = { it.value.id },
+        modifier = modifier,
+    ) { (index, media) ->
+        MediaCardView(media = media, colorIndex = index, cardWidth = cardWidth, cardHeight = cardHeight)
     }
 }
 

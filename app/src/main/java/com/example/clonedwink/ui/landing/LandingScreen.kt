@@ -1,12 +1,9 @@
 package com.example.clonedwink.ui.landing
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -62,15 +58,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import coil3.compose.AsyncImage
 import com.example.clonedwink.R
 import com.example.clonedwink.data.model.CarouselSlide
+import com.example.clonedwink.ui.components.CarouselAutoScroll
+import com.example.clonedwink.ui.components.CarouselDotIndicator
 import com.example.clonedwink.ui.theme.ClonedWinkTheme
 import com.example.clonedwink.viewmodel.landing.LandingUiState
-import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
 // Android/Kotlin: this whole file is the "View" half of the landing screen's MVVM split, but
@@ -169,19 +163,29 @@ fun LandingScreen(
                 // returned anything) hits this branch — see LandingUiState's isLoading=true
                 // default. A centered spinner over the gradient stands in for the carousel
                 // until the first uiState with slides arrives.
+                //
+                // Kotlin: `Modifier.weight(1f)` here (a `ColumnScope` member, usable because
+                // this whole branch sits directly inside the outer `Column { ... }` lambda
+                // above) claims all the vertical space this Column isn't using for the title,
+                // spacers, and the button below — same space the loaded SlideCarousel branch
+                // claims below, so the spinner and the real carousel occupy the same region
+                // instead of the spinner being a small fixed box that leaves a gap.
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dimensionResource(R.dimen.carousel_height)),
+                        .weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(color = colorResource(R.color.white))
                 }
             } else if (uiState.slides.isNotEmpty()) {
-                SlideCarousel(slides = uiState.slides)
+                SlideCarousel(slides = uiState.slides, modifier = Modifier.weight(1f))
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            // Android: a fixed gap (not the old `Modifier.weight(1f)` spacer) so the button
+            // sits the *same* distance below the page indicator as the indicator sits below the
+            // carousel itself — see SlideCarousel below, which uses this same dimen for that gap.
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.carousel_indicator_spacing)))
 
             GetStartedButton(onClick = onGetStartedClick)
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.landing_content_padding)))
@@ -221,62 +225,72 @@ private fun BackgroundBlobs() {
 }
 
 @Composable
-private fun SlideCarousel(slides: List<CarouselSlide>) {
+private fun SlideCarousel(slides: List<CarouselSlide>, modifier: Modifier = Modifier) {
     // Kotlin: `pageCount = { slides.size }` is a *lambda*, not a plain Int — rememberPagerState
     // re-reads it on every layout pass so the pager stays correct if `slides` grows/shrinks
     // later (e.g. a real network-backed CarouselRepository refreshing), without needing to
     // manually recreate the PagerState.
     val pagerState = rememberPagerState(pageCount = { slides.size })
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-    // Android: `repeatOnLifecycle(STARTED)` is the same "pause while backgrounded" pattern the
-    // old LandingActivity.autoScroll() used with `lifecycleScope` — here it's driven by
-    // `LocalLifecycleOwner` (the Activity hosting this Composition) instead of the Activity
-    // class itself, so the auto-scroll loop still cancels when the app is backgrounded and
-    // restarts when it's foregrounded again, rather than silently advancing pages off-screen.
-    LaunchedEffect(slides.size, lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            if (slides.size <= 1) return@repeatOnLifecycle
-            while (true) {
-                delay(AUTO_SCROLL_INTERVAL_MS)
-                val nextPage = (pagerState.currentPage + 1) % slides.size
-                pagerState.animateScrollToPage(nextPage)
-            }
-        }
-    }
+    // Android: the pause-while-backgrounded auto-advance behavior — shared with the home
+    // screen's promo banner carousel, so it lives in `ui/components/CarouselAutoScroll.kt`
+    // instead of being written out here a second time.
+    CarouselAutoScroll(pagerState = pagerState, itemCount = slides.size, intervalMs = AUTO_SCROLL_INTERVAL_MS)
 
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(dimensionResource(R.dimen.carousel_height)),
-        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.carousel_peek_padding)),
-        pageSpacing = dimensionResource(R.dimen.carousel_page_margin),
-    ) { page ->
-        GlassSlideCard(
-            slide = slides[page],
+    // Kotlin: wrapping the pager + indicator in their own `Column(modifier)` — rather than
+    // emitting them directly into the caller's Column, like this function used to — is what
+    // lets LandingScreen hand in `Modifier.weight(1f)` from *its* Column scope and have that
+    // weight apply to this whole group as one flexible-height block.
+    Column(modifier = modifier) {
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier
-                .fillMaxSize()
-                // Android/Kotlin: `pagerState.currentPageOffsetFraction` changes on every
-                // scroll frame, so it's read *inside* this graphicsLayer lambda rather than as
-                // a `val` in the composable body above — graphicsLayer's block runs during the
-                // draw phase, not recomposition, so scrolling only re-triggers drawing instead
-                // of re-running this whole function on every frame. The formula itself
-                // reproduces the old ViewPager2 PageTransformer's `position` value — 0f for the
-                // fully centered page, growing toward 1f for neighbors as the user swipes — for
-                // the same "shrink + fade the peeking neighbors" effect.
-                .graphicsLayer {
-                    val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
-                        .absoluteValue
-                        .coerceIn(0f, 1f)
-                    scaleY = lerp(MIN_PEEK_SCALE, 1f, 1f - pageOffset)
-                    alpha = lerp(MIN_PEEK_ALPHA, 1f, 1f - pageOffset)
-                },
+                .fillMaxWidth()
+                // Android: `weight(1f)` instead of a fixed `carousel_height` dimen — the pager
+                // now grows to fill whatever space this Column's `modifier` weight was given,
+                // so the carousel's actual on-screen height follows the available room between
+                // the tagline and the button instead of a number picked by hand.
+                .weight(1f),
+            contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.carousel_peek_padding)),
+            pageSpacing = dimensionResource(R.dimen.carousel_page_margin),
+        ) { page ->
+            GlassSlideCard(
+                slide = slides[page],
+                modifier = Modifier
+                    .fillMaxSize()
+                    // Android/Kotlin: `pagerState.currentPageOffsetFraction` changes on every
+                    // scroll frame, so it's read *inside* this graphicsLayer lambda rather than as
+                    // a `val` in the composable body above — graphicsLayer's block runs during the
+                    // draw phase, not recomposition, so scrolling only re-triggers drawing instead
+                    // of re-running this whole function on every frame. The formula itself
+                    // reproduces the old ViewPager2 PageTransformer's `position` value — 0f for the
+                    // fully centered page, growing toward 1f for neighbors as the user swipes — for
+                    // the same "shrink + fade the peeking neighbors" effect.
+                    .graphicsLayer {
+                        val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
+                            .absoluteValue
+                            .coerceIn(0f, 1f)
+                        scaleY = lerp(MIN_PEEK_SCALE, 1f, 1f - pageOffset)
+                        alpha = lerp(MIN_PEEK_ALPHA, 1f, 1f - pageOffset)
+                    },
+            )
+        }
+
+        // Android: this uses the same `carousel_indicator_spacing` dimen as the gap
+        // LandingScreen puts between this whole carousel block and the Get Started button below
+        // it, so both gaps read as one consistent rhythm instead of two hand-picked values.
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.carousel_indicator_spacing)))
+        CarouselDotIndicator(
+            pageCount = slides.size,
+            currentPage = pagerState.currentPage,
+            selectedColor = colorResource(R.color.white),
+            unselectedColor = colorResource(R.color.glass_indicator_track),
+            selectedWidth = dimensionResource(R.dimen.carousel_dot_bound_width),
+            unselectedWidth = dimensionResource(R.dimen.carousel_dot_unselected_width),
+            dotHeight = dimensionResource(R.dimen.carousel_dot_height),
+            dotSpacing = dimensionResource(R.dimen.carousel_dot_spacing),
         )
     }
-
-    Spacer(modifier = Modifier.height(16.dp))
-    PageIndicator(pageCount = slides.size, currentPage = pagerState.currentPage)
 }
 
 @Composable
@@ -404,40 +418,6 @@ private fun brandGradientForSlide(id: String): List<Color> = when (id) {
     "chat" -> listOf(colorResource(R.color.brand_pink), colorResource(R.color.brand_pink_dark))
     "date" -> listOf(colorResource(R.color.brand_teal), colorResource(R.color.brand_teal_dark))
     else -> listOf(colorResource(R.color.brand_purple), colorResource(R.color.brand_purple_dark))
-}
-
-@Composable
-private fun PageIndicator(pageCount: Int, currentPage: Int) {
-    if (pageCount <= 1) return
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        repeat(pageCount) { index ->
-            val selected = index == currentPage
-            // Kotlin: `animateDpAsState` returns a `State<Dp>` that smoothly interpolates
-            // toward `targetValue` on every recomposition where it changes — this is what
-            // makes the selected dot visibly "grow" into a pill instead of snapping, the same
-            // expand-on-select motion dot_selected.xml/carousel_indicator_selector.xml gave the
-            // old TabLayout-based indicator, just animated in Kotlin instead of via drawables.
-            val width by animateDpAsState(
-                targetValue = if (selected) dimensionResource(R.dimen.carousel_dot_bound_width) else 8.dp,
-                animationSpec = tween(durationMillis = 250),
-                label = "indicatorWidth",
-            )
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(R.dimen.carousel_dot_spacing))
-                    .width(width)
-                    .height(dimensionResource(R.dimen.carousel_dot_height))
-                    .clip(RoundedCornerShape(50))
-                    .background(
-                        if (selected) colorResource(R.color.white) else colorResource(R.color.glass_indicator_track),
-                    ),
-            )
-        }
-    }
 }
 
 @Composable

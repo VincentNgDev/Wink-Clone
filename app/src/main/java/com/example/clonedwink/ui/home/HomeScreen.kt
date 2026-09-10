@@ -3,10 +3,8 @@ package com.example.clonedwink.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -148,11 +146,11 @@ fun HomeScreen(
                 }
 
                 item {
-                    Column(modifier = Modifier.padding(top = dimensionResource(R.dimen.home_section_spacing))) {
-                        SectionHeader(title = stringResource(R.string.home_section_friends_of_wink))
-                        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.home_section_header_spacing)))
-                        PartnerRow(partners = content.partners)
-                    }
+                    PartnerRow(
+                        title = stringResource(R.string.home_section_friends_of_wink),
+                        partners = content.partners,
+                        modifier = Modifier.padding(top = dimensionResource(R.dimen.home_section_spacing)),
+                    )
                 }
 
                 item {

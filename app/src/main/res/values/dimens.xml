@@ -1,5 +1,4 @@
 <resources>
-    <dimen name="carousel_height">240dp</dimen>
     <dimen name="carousel_text_padding">20dp</dimen>
     <dimen name="landing_content_padding">24dp</dimen>
 
@@ -11,10 +10,17 @@
     <dimen name="carousel_card_corner_radius">24dp</dimen>
     <dimen name="carousel_card_elevation">6dp</dimen>
 
-    <!-- Dot indicator (ui/landing/LandingScreen.kt's PageIndicator): unselected dots are small
-         circles; the selected dot animates to a wider pill within the same bound width, so the
-         indicator "expands" for the active page instead of just recoloring a same-size dot. -->
+    <!-- Vertical gap below the carousel: used twice so the slide-to-indicator gap and the
+         indicator-to-button gap read as the same rhythm instead of two different values. -->
+    <dimen name="carousel_indicator_spacing">16dp</dimen>
+
+    <!-- Dot indicator (ui/components/CarouselDotIndicator.kt), used by the landing onboarding
+         carousel: unselected dots are small circles; the selected dot animates to a wider pill,
+         so the indicator "expands" for the active page instead of just recoloring a same-size
+         dot. carousel_dot_spacing (the small horizontal gap between dots) is also reused by the
+         home screen's promo banner indicator below, since both use the same dot rhythm. -->
     <dimen name="carousel_dot_bound_width">24dp</dimen>
+    <dimen name="carousel_dot_unselected_width">8dp</dimen>
     <dimen name="carousel_dot_height">8dp</dimen>
     <dimen name="carousel_dot_spacing">3dp</dimen>
 
@@ -64,6 +70,12 @@
     <dimen name="promo_banner_corner_radius">20dp</dimen>
     <dimen name="promo_banner_peek_padding">20dp</dimen>
     <dimen name="promo_banner_page_margin">10dp</dimen>
+
+    <!-- Promo banner carousel's dot indicator (ui/components/CarouselDotIndicator.kt) — same
+         component as the landing carousel's, sized smaller to suit this shorter banner. -->
+    <dimen name="promo_indicator_selected_width">20dp</dimen>
+    <dimen name="promo_indicator_unselected_width">6dp</dimen>
+    <dimen name="promo_indicator_dot_height">6dp</dimen>
 
     <!-- Station selector bar (ui/home/HomeComponents.kt's StationSelectorBar). -->
     <dimen name="station_bar_corner_radius">16dp</dimen>
