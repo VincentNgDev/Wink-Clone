@@ -1,0 +1,38 @@
+<resources>
+    <dimen name="carousel_text_padding">20dp</dimen>
+    <dimen name="landing_content_padding">24dp</dimen>
+
+    <!-- Modern "peeking card" carousel (LandingScreen.kt's SlideCarousel): the pager is padded
+         on each side so the previous/next cards peek in from the edges, plus a further gap
+         between cards via HorizontalPager's pageSpacing. -->
+    <dimen name="carousel_peek_padding">28dp</dimen>
+    <dimen name="carousel_page_margin">12dp</dimen>
+    <dimen name="carousel_card_corner_radius">24dp</dimen>
+    <dimen name="carousel_card_elevation">6dp</dimen>
+
+    <!-- Vertical gap below the carousel: used twice so the slide-to-indicator gap and the
+         indicator-to-button gap read as the same rhythm instead of two different values. -->
+    <dimen name="carousel_indicator_spacing">16dp</dimen>
+
+    <!-- Dot indicator (core:ui's CarouselDotIndicator.kt), used by the landing onboarding
+         carousel: unselected dots are small circles; the selected dot animates to a wider pill,
+         so the indicator "expands" for the active page instead of just recoloring a same-size
+         dot. The small horizontal gap between dots (carousel_dot_spacing) lives in core:ui's
+         dimens.xml instead, since the home screen's promo banner indicator reuses that same
+         value. -->
+    <dimen name="carousel_dot_bound_width">24dp</dimen>
+    <dimen name="carousel_dot_unselected_width">8dp</dimen>
+    <dimen name="carousel_dot_height">8dp</dimen>
+
+    <!-- Pill-shaped call-to-action button. -->
+    <dimen name="cta_height">56dp</dimen>
+    <dimen name="cta_corner_radius">28dp</dimen>
+
+    <!-- Glassmorphism landing screen (LandingScreen.kt): frosted icon badge on each slide card,
+         its border stroke, and the soft decorative blobs floated behind the carousel for depth. -->
+    <dimen name="glass_badge_size">56dp</dimen>
+    <dimen name="glass_badge_icon_size">28dp</dimen>
+    <dimen name="glass_border_width">1dp</dimen>
+    <dimen name="blob_size_large">220dp</dimen>
+    <dimen name="blob_size_small">140dp</dimen>
+</resources>

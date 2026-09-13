@@ -70,6 +70,10 @@ androidx-hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "h
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+# Android: applied by every library module (core/* and feature/*) below `app` in the dependency
+# graph — a library module produces an AAR to be consumed by another module, not an installable
+# APK, so it has no applicationId/versionCode and can't be run directly.
+android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

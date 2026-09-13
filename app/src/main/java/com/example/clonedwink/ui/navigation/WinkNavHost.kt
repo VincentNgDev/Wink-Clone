@@ -11,10 +11,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.clonedwink.R
-import com.example.clonedwink.ui.home.HomeScreen
-import com.example.clonedwink.ui.landing.LandingScreen
-import com.example.clonedwink.viewmodel.home.HomeViewModel
-import com.example.clonedwink.viewmodel.landing.LandingViewModel
+import com.example.clonedwink.feature.home.ui.HomeScreen
+import com.example.clonedwink.feature.home.viewmodel.HomeViewModel
+import com.example.clonedwink.feature.landing.ui.LandingScreen
+import com.example.clonedwink.feature.landing.viewmodel.LandingViewModel
 
 // Android: this is the single-Activity-architecture piece. Previously LandingActivity and
 // HomeActivity were two separate Android components, each started via an `Intent` (see

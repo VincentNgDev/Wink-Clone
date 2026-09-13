@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Wink+ brand palette. These three hues are the app's identity — purple for primary
+        actions/branding, pink as the warm secondary accent, teal as a tertiary highlight —
+        and are reused below for both the Material theme attributes and the carousel slide
+        backgrounds so the whole app reads as one consistent palette.
+    -->
+    <color name="brand_purple">#FF6C5CE7</color>
+    <color name="brand_purple_dark">#FF5546C4</color>
+    <color name="brand_pink">#FFE8608A</color>
+    <color name="brand_pink_dark">#FFC94A72</color>
+    <color name="brand_teal">#FF00B894</color>
+    <color name="brand_teal_dark">#FF00967A</color>
+
+    <color name="white">#FFFFFFFF</color>
+
+    <!--
+        Android: these are the "semantic" tokens the theme (themes.xml) and layouts point at
+        instead of raw hex values. Because this file only ever applies in light mode (day) and
+        values-night/colors.xml re-declares the same names with dark-mode values, both
+        values/themes.xml and values-night/themes.xml can share the same color references and
+        still resolve to the right value for the active system theme.
+    -->
+    <color name="surface">@color/white</color>
+    <color name="background">#FFFDF7FA</color>
+    <color name="on_surface">#FF1B1B1F</color>
+    <color name="on_surface_variant">#FF6F6F78</color>
+
+    <color name="carousel_scrim_opaque">#B3000000</color>
+
+    <!--
+        Glassmorphism tokens for the redesigned Compose landing screen (see feature:landing's
+        LandingScreen.kt and this module's theme/Theme.kt). These are translucent whites layered
+        over the brand_purple -> brand_pink gradient background, per the "frosted glass" recipe:
+        a low-opacity white fill plus a slightly-more-opaque white border reads as a pane of
+        glass catching light, without needing a real (API 31+) backdrop blur behind it.
+    -->
+    <color name="glass_fill">#33FFFFFF</color>
+    <color name="glass_border">#66FFFFFF</color>
+    <color name="glass_indicator_track">#40FFFFFF</color>
+
+    <!-- Soft, low-opacity blobs floated behind the glass cards for background depth. -->
+    <color name="blob_teal">#4D00B894</color>
+    <color name="blob_purple">#405546C4</color>
+
+    <!--
+        Home screen (feature:home's HomeScreen.kt and friends): a couple of semantic accents the
+        brand_purple/pink/teal trio above can't stand in for — a star-rating gold and an
+        "open now" status green — plus a neutral fill for small category chips (Zi Char,
+        Mala, ...) that sits on the plain white/clean card surfaces this screen mostly uses.
+    -->
+    <color name="rating_star">#FFFFB300</color>
+    <color name="status_open">#FF2E9E5B</color>
+    <color name="chip_background">#FFF2F2F5</color>
+</resources>

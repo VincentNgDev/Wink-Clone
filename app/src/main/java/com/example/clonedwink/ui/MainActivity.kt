@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.clonedwink.core.ui.theme.ClonedWinkTheme
 import com.example.clonedwink.ui.navigation.WinkNavHost
-import com.example.clonedwink.ui.theme.ClonedWinkTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 // Android: the app's one and only Activity (single-Activity architecture) — every screen

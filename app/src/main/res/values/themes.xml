@@ -1,14 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!--
-        Android: this is the app's single theme, applied in AndroidManifest.xml via
-        android:theme="@style/Theme.Clonedwink". `Theme.Material3.DayNight.NoActionBar` is the
-        Material 3 base theme (from the `material` library) — "DayNight" means it automatically
-        swaps to its dark variant when the system is in dark mode (paired with
-        values-night/colors.xml below), and "NoActionBar" removes the default top app bar since
-        the landing screen draws its own title TextView instead.
+        Android: this is the app's single theme, applied below via
+        android:theme="@style/Theme.Clonedwink" — it lives in `app` (not `core:ui`) because it's
+        an AndroidManifest-only concern: no Kotlin/Compose code anywhere reads it, only this
+        module's manifest does. It also needs the `material`/`appcompat` libraries on its
+        classpath to resolve `Theme.Material3.DayNight.NoActionBar`'s attrs (colorPrimary, etc.)
+        during resource verification — `core:ui` (a Compose-only module) doesn't depend on
+        those, which is exactly what happens when this file is moved there instead: AAPT fails
+        to link it as a standalone library resource.
 
-        Every `item` below points at a semantic color name from colors.xml (not a raw hex) —
-        those names resolve differently in light vs. dark mode via values-night/colors.xml.
+        Every `item` below points at a semantic color name from `core:ui`'s colors.xml (not a
+        raw hex) — those names resolve differently in light vs. dark mode via that module's
+        values-night/colors.xml. A cross-module `@color/...` XML reference like this works fine
+        because resource merging combines every module's res/ into one table at build time; it's
+        only *code* references (Kotlin's `R.foo.bar`) that are scoped per-module (see
+        MainActivity.kt/WinkNavHost.kt for that side of the split).
+
         values-night/themes.xml re-declares this same style (style resources don't merge
         across resource-qualifier folders) so it can flip the one item that genuinely differs
         by mode (the status bar icon color) while sharing these same color names.

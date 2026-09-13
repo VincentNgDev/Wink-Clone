@@ -1,61 +1,11 @@
 <resources>
     <string name="app_name">clonedwink</string>
 
-    <string name="landing_title">Wink+</string>
-    <string name="landing_tagline">Real connections start here</string>
-    <string name="landing_cta_get_started">Get started</string>
+    <!-- Android: these two only exist for WinkNavHost's Toast.makeText(...) calls, which stay
+         in this module (see ui/navigation/WinkNavHost.kt) even though the LandingScreen/
+         HomeScreen composables that report the underlying error now live in feature:landing/
+         feature:home — that's why these strings didn't move out to those feature modules along
+         with everything else. -->
     <string name="error_loading_slides">Couldn\'t load the carousel. Showing defaults.</string>
-
-    <string name="carousel_slide_1_title">Meet new people nearby</string>
-    <string name="carousel_slide_1_subtitle">Discover matches based on shared interests</string>
-    <string name="carousel_slide_1_content_description">Two people chatting over coffee</string>
-
-    <string name="carousel_slide_2_title">Chat without the awkwardness</string>
-    <string name="carousel_slide_2_subtitle">Icebreakers that actually start conversations</string>
-    <string name="carousel_slide_2_content_description">Chat bubbles between two phones</string>
-
-    <string name="carousel_slide_3_title">Plan your first date</string>
-    <string name="carousel_slide_3_subtitle">Curated spots picked for both of you</string>
-    <string name="carousel_slide_3_content_description">A calendar with a heart icon</string>
-
-    <!--
-        Home screen (ui/home/HomeScreen.kt). Only screen "chrome" — labels for fixed
-        navigational actions, section headers, and bottom-nav tabs — lives here; the mock
-        listing content itself (partner names, promo banner copy, place/feature/media card
-        text) is defined as plain Kotlin literals in DefaultHomeRepository.kt, since it stands
-        in for what a real backend would return already-formatted, the same way a server
-        response is never routed through strings.xml. See that file's comment for the full
-        reasoning.
-    -->
-    <string name="home_loyalty_title">My WINK+ Points</string>
-    <string name="home_scan_qr">Scan QR</string>
-    <string name="home_rewards">Rewards</string>
-    <string name="home_station_info">Station Info</string>
-    <string name="home_change_station_content_description">Change station</string>
-    <string name="home_section_friends_of_wink">Friends of WINK+</string>
-    <string name="home_section_dining_deals">MRTreats Dining Deals</string>
-    <string name="home_section_dinner_nearby">Dinner Nearby</string>
-    <string name="home_section_exciting_events">Exciting Events Around the Island</string>
-    <string name="home_section_hot_deals">Hot Deals and Promotions</string>
-    <string name="home_section_news">News and Highlights</string>
-    <string name="home_section_movies">Movies</string>
-    <string name="home_see_more">See more</string>
-    <string name="home_more_sheet_title">More</string>
-    <string name="home_bottom_nav_home">Home</string>
-    <string name="home_bottom_nav_search">Search</string>
-    <string name="home_bottom_nav_profile">Profile</string>
     <string name="error_loading_home">Couldn\'t load the home screen. Showing defaults.</string>
-
-    <!-- Quick-link tiles: the 4 always-visible shortcuts plus the extras revealed in the
-         "More" bottom sheet — fixed navigational actions, not fetched content. -->
-    <string name="quick_link_bus">Bus</string>
-    <string name="quick_link_train">Train</string>
-    <string name="quick_link_mrt_map">MRT Map</string>
-    <string name="quick_link_more">More</string>
-    <string name="quick_link_taxi">Taxi</string>
-    <string name="quick_link_parking">Parking</string>
-    <string name="quick_link_vouchers">Vouchers</string>
-    <string name="quick_link_feedback">Feedback</string>
-    <string name="quick_link_contact_us">Contact Us</string>
-    <string name="quick_link_nearby_deals">Nearby Deals</string>
 </resources>

@@ -8,6 +8,17 @@ folder at the root of the repo and under `app/`, answering "what is this, and wh
 exist" for each, so opening the project tree in Android Studio stops looking like a wall
 of unfamiliar names.
 
+## Update: this project is no longer single-module
+
+Everything below describes the project as it was when there was exactly one Gradle module,
+`app`. As of `.claude/changes/2026-09-13-migrate-to-multi-module-architecture.md`, the
+`app/src/main/java/...` packages this lesson walks through were split into separate `core:*`/
+`feature:*` Gradle modules — see [[14-2026-09-13-multi-module-architecture]] for the new module
+graph, `settings.gradle.kts`, and everything that changed about `R` classes and dependencies
+along the way. The Gradle-basics material further down (the version catalog, the Wrapper, the
+daemon toolchain, keep rules, `.idea/`) is all still accurate; only the "one Gradle project, one
+module" framing and the exact package paths below are now out of date.
+
 ## Update: two packages added since this lesson was written
 
 `com.example.clonedwink.java/` gained two top-level packages this tour predates:

@@ -47,6 +47,20 @@ android {
 }
 
 dependencies {
+    // Android/Kotlin: `project(":core:ui")`/`project(":feature:...")` — a *project* dependency
+    // (as opposed to `libs.foo`, a published library coordinate) points at another module in
+    // this same Gradle build. `app` needs `core:ui` directly for ClonedWinkTheme (MainActivity)
+    // and both feature modules for WinkNavHost to reach their screens/ViewModels. It also needs
+    // `core:model` directly — even though WinkNavHost never constructs a QuickLinkItem itself,
+    // HomeScreen's `onQuickLinkClick: (QuickLinkItem) -> Unit` parameter means the compiler
+    // still needs that class visible here, and `feature:home` depends on `core:model` only as
+    // `implementation` (not `api`), which deliberately doesn't leak it to modules downstream of
+    // `feature:home` — so `app` declares its own direct dependency instead of relying on one.
+    implementation(project(":core:model"))
+    implementation(project(":core:ui"))
+    implementation(project(":feature:landing"))
+    implementation(project(":feature:home"))
+
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
@@ -58,9 +72,6 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.coil.android)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
     implementation(libs.hilt.android)
     // Kotlin/Android: `ksp(...)` (not `implementation(...)`) — this artifact is Hilt's
     // *annotation processor*, code that runs at compile time to generate the DI wiring classes.
@@ -88,7 +99,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.extended)
     // Android: ui-tooling powers the Android Studio @Preview renderer — it's only needed at
     // development time, so `debugImplementation` keeps it (and its extra APK weight) out of
     // release builds entirely instead of just being unused code.

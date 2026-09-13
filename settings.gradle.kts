@@ -24,3 +24,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "clonedwink"
 include(":app")
+include(":core:model")
+include(":core:network")
+include(":core:database")
+include(":core:ui")
+include(":feature:landing")
+include(":feature:home")
+include(":feature:auth")
+include(":feature:profile")

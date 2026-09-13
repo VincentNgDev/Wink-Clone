@@ -5,8 +5,8 @@
         resources don't merge across resource-qualifier folders, so every item from the light
         version has to be repeated here too (only `android:windowLightStatusBar` actually
         differs). Both files point at the same semantic color names (e.g. @color/background);
-        it's values-night/colors.xml that supplies the dark value for that name, which is what
-        keeps the two theme files from needing separate hardcoded hex colors.
+        it's `core:ui`'s values-night/colors.xml that supplies the dark value for that name,
+        which is what keeps the two theme files from needing separate hardcoded hex colors.
     -->
     <style name="Theme.Clonedwink" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/brand_purple</item>

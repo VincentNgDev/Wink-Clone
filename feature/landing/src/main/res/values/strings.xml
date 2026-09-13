@@ -1,0 +1,17 @@
+<resources>
+    <string name="landing_title">Wink+</string>
+    <string name="landing_tagline">Real connections start here</string>
+    <string name="landing_cta_get_started">Get started</string>
+
+    <string name="carousel_slide_1_title">Meet new people nearby</string>
+    <string name="carousel_slide_1_subtitle">Discover matches based on shared interests</string>
+    <string name="carousel_slide_1_content_description">Two people chatting over coffee</string>
+
+    <string name="carousel_slide_2_title">Chat without the awkwardness</string>
+    <string name="carousel_slide_2_subtitle">Icebreakers that actually start conversations</string>
+    <string name="carousel_slide_2_content_description">Chat bubbles between two phones</string>
+
+    <string name="carousel_slide_3_title">Plan your first date</string>
+    <string name="carousel_slide_3_subtitle">Curated spots picked for both of you</string>
+    <string name="carousel_slide_3_content_description">A calendar with a heart icon</string>
+</resources>

@@ -1,0 +1,72 @@
+<resources>
+    <!-- Home screen (HomeScreen.kt): shared horizontal padding for every section's body
+         text/headers, and the vertical gap left between one section and the next. -->
+    <dimen name="home_content_padding">20dp</dimen>
+    <dimen name="home_section_spacing">28dp</dimen>
+    <dimen name="home_section_header_spacing">12dp</dimen>
+
+    <!-- Loyalty points card (HomeScreen.kt's HomeTopSection): a white rounded card that
+         overlaps the bottom edge of the pink gradient header, mirroring the reference
+         screenshot's "floating card" look. -->
+    <dimen name="home_header_gradient_height">150dp</dimen>
+    <dimen name="loyalty_card_corner_radius">20dp</dimen>
+    <dimen name="loyalty_card_elevation">8dp</dimen>
+    <dimen name="loyalty_card_padding">20dp</dimen>
+    <dimen name="loyalty_card_overlap">28dp</dimen>
+    <dimen name="loyalty_divider_height">28dp</dimen>
+
+    <!-- Quick-link tiles (HomeComponents.kt's QuickLinkTile): Bus/Train/MRT Map/More. -->
+    <dimen name="quick_link_tile_size">60dp</dimen>
+    <dimen name="quick_link_icon_size">28dp</dimen>
+    <dimen name="quick_link_corner_radius">16dp</dimen>
+
+    <!-- "Friends of WINK+" partner logo row (HomeComponents.kt's PartnerCard). -->
+    <dimen name="partner_card_width">84dp</dimen>
+    <dimen name="partner_logo_size">64dp</dimen>
+    <dimen name="partner_logo_corner_radius">16dp</dimen>
+    <dimen name="partner_card_spacing">14dp</dimen>
+
+    <!-- Promo banner carousel (HomeSections.kt's PromoBannerCarousel) — a wider, shorter card
+         than the landing screen's onboarding carousel. -->
+    <dimen name="promo_banner_height">160dp</dimen>
+    <dimen name="promo_banner_corner_radius">20dp</dimen>
+    <dimen name="promo_banner_peek_padding">20dp</dimen>
+    <dimen name="promo_banner_page_margin">10dp</dimen>
+
+    <!-- Promo banner carousel's dot indicator (core:ui's CarouselDotIndicator.kt) — same
+         component as the landing carousel's, sized smaller to suit this shorter banner. The
+         shared dot-spacing value itself lives in core:ui's dimens.xml. -->
+    <dimen name="promo_indicator_selected_width">20dp</dimen>
+    <dimen name="promo_indicator_unselected_width">6dp</dimen>
+    <dimen name="promo_indicator_dot_height">6dp</dimen>
+
+    <!-- Station selector bar (HomeComponents.kt's StationSelectorBar). -->
+    <dimen name="station_bar_corner_radius">16dp</dimen>
+    <dimen name="station_bar_padding">16dp</dimen>
+
+    <!-- Place cards — dining deals / dinner nearby (HomeSections.kt's PlaceCardView). -->
+    <dimen name="place_card_width">220dp</dimen>
+    <dimen name="place_card_image_height">130dp</dimen>
+    <dimen name="place_card_corner_radius">16dp</dimen>
+    <dimen name="place_card_spacing">14dp</dimen>
+
+    <!-- Feature cards — exciting events / hot deals (HomeSections.kt's FeatureCardView),
+         deliberately larger than the partner_logo_size square above. -->
+    <dimen name="feature_card_size">170dp</dimen>
+    <dimen name="feature_card_corner_radius">16dp</dimen>
+    <dimen name="feature_card_spacing">12dp</dimen>
+
+    <!-- Media cards — news/highlights (landscape) and movies (portrait), same
+         HomeSections.kt's MediaCardView at two different fixed sizes. -->
+    <dimen name="media_card_landscape_width">220dp</dimen>
+    <dimen name="media_card_landscape_height">130dp</dimen>
+    <dimen name="media_card_portrait_width">130dp</dimen>
+    <dimen name="media_card_portrait_height">190dp</dimen>
+    <dimen name="media_card_corner_radius">14dp</dimen>
+    <dimen name="media_card_spacing">12dp</dimen>
+
+    <!-- Bottom navigation bar (HomeComponents.kt's HomeBottomNavBar). -->
+    <dimen name="bottom_nav_height">76dp</dimen>
+    <dimen name="bottom_nav_pill_corner_radius">24dp</dimen>
+    <dimen name="bottom_nav_icon_size">24dp</dimen>
+</resources>

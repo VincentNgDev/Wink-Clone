@@ -1,0 +1,9 @@
+<resources>
+    <!-- Dot indicator spacing (core/ui/components/CarouselDotIndicator.kt) — the one dimension
+         genuinely shared by both carousels: feature:landing's onboarding carousel and
+         feature:home's promo banner carousel both space their dots by this same amount, so it
+         lives here in core:ui instead of being duplicated in each feature module. Every other
+         carousel dimension (widths, heights, corner radii, ...) differs between the two and
+         lives in that feature's own dimens.xml instead. -->
+    <dimen name="carousel_dot_spacing">3dp</dimen>
+</resources>
