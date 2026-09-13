@@ -230,3 +230,7 @@ references need an aliased second `R` import, and a couple of Kotlin language gu
 casts) get stricter once a class's declaration and its use sites are compiled separately. None of
 that is exotic to this project — it's the same set of trade-offs every multi-module Android app
 takes on.
+
+See [[15-2026-09-13-cross-module-dependencies]] for the mechanics behind the `project(":...")`
+lines above — `implementation` vs `api`, why a dependency cycle simply won't build, and what to do
+when two feature modules seem to need each other.
