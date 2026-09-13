@@ -3,11 +3,13 @@ package com.example.clonedwink.viewmodel.landing
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clonedwink.data.repository.CarouselRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // Android: extending androidx.lifecycle.ViewModel gives this class a lifecycle that
 // *outlives* any single Activity/Fragment instance. When the device rotates, LandingActivity
@@ -19,11 +21,21 @@ import kotlinx.coroutines.launch
 // a ViewModel — none of that survives rotation the same way, so holding one here would leak it.
 //
 // Kotlin: the constructor takes a `CarouselRepository` *interface*, not the concrete
-// DefaultCarouselRepository — dependency inversion. LandingActivity decides which concrete
-// implementation to hand in (see its viewModelFactory); this class only needs to know "I can
-// call getSlides() on whatever I was given," which is also what makes LandingViewModelTest
-// able to pass in a FakeCarouselRepository instead of touching real Android Context/resources.
-class LandingViewModel(private val carouselRepository: CarouselRepository) : ViewModel() {
+// DefaultCarouselRepository — dependency inversion. Hilt decides which concrete implementation
+// to hand in (see di/RepositoryModule.kt's `@Binds` and the `@HiltViewModel`/`@Inject` below);
+// this class only needs to know "I can call getSlides() on whatever I was given," which is also
+// what makes LandingViewModelTest able to pass in a FakeCarouselRepository directly (constructed
+// with plain `LandingViewModel(fake)` — no Hilt involved at all in a JVM unit test).
+//
+// Android/Kotlin: `@HiltViewModel` marks this ViewModel as one Hilt knows how to build, and
+// `@Inject constructor(...)` says how — "give me a CarouselRepository from the dependency graph
+// and call this constructor." Together, this is what lets LandingActivity just write
+// `by viewModels()` with no factory lambda at all (see that file): Hilt generates the factory
+// that used to be hand-written there.
+@HiltViewModel
+class LandingViewModel @Inject constructor(
+    private val carouselRepository: CarouselRepository,
+) : ViewModel() {
 
     // Kotlin/Android: `MutableStateFlow` is a hot, observable holder of a single current
     // value (like LiveData, but a native Kotlin coroutines type). It always has a value

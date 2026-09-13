@@ -9,6 +9,8 @@ import com.example.clonedwink.data.model.home.PartnerItem
 import com.example.clonedwink.data.model.home.PlaceCard
 import com.example.clonedwink.data.model.home.PromoBanner
 import com.example.clonedwink.data.model.home.QuickLinkItem
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 // Android: takes a Context for the same reason DefaultCarouselRepository does — resolving the
 // fixed navigational label strings (Bus, Train, MRT Map, ...) through context.getString(). The
@@ -25,7 +27,13 @@ import com.example.clonedwink.data.model.home.QuickLinkItem
 // ui/home/HomeComponents.kt renders every card's photo area as a brand-color gradient tile
 // (cycled by list position) instead. A future version of this repository handing back real
 // `imageUrl`s would render unchanged, the same way GlassSlideCard already supports both cases.
-class DefaultHomeRepository(private val context: Context) : HomeRepository {
+// Kotlin/Android: `@Inject constructor` + `@ApplicationContext` — same reasoning as
+// DefaultCarouselRepository.kt's matching constructor; see that file's comment.
+class DefaultHomeRepository @Inject constructor(
+    // Kotlin: `@param:ApplicationContext` — see DefaultCarouselRepository.kt's matching
+    // constructor comment for why the explicit `param:` target matters here.
+    @param:ApplicationContext private val context: Context,
+) : HomeRepository {
 
     override suspend fun getHomeContent(): HomeContent = HomeContent(
         loyaltyPoints = 2450,

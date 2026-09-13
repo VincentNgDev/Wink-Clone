@@ -74,12 +74,14 @@ Two consumers construct it differently, and neither needs the ViewModel to chang
 
 1. **Real app** (`LandingActivity`):
    ```kotlin
-   private val viewModel: LandingViewModel by viewModels {
-       viewModelFactory {
-           initializer { LandingViewModel(DefaultCarouselRepository(applicationContext)) }
-       }
-   }
+   private val viewModel: LandingViewModel by viewModels()
    ```
+   This used to be a hand-written `viewModelFactory { initializer { LandingViewModel(
+   DefaultCarouselRepository(applicationContext)) } }` block — as of
+   [[12-2026-09-12-hilt-dependency-injection]], Hilt generates that factory instead, from
+   `LandingViewModel`'s `@HiltViewModel`/`@Inject constructor` and a `@Binds` mapping in
+   `di/RepositoryModule.kt`. Either way, the point stands: *something outside the
+   ViewModel* decides which concrete `CarouselRepository` to construct and hand in.
 2. **Unit test** (`LandingViewModelTest`, `app/src/test/...`):
    ```kotlin
    val viewModel = LandingViewModel(FakeCarouselRepository(slides))

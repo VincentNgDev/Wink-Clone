@@ -3,6 +3,8 @@ package com.example.clonedwink.data.repository
 import android.content.Context
 import com.example.clonedwink.R
 import com.example.clonedwink.data.model.CarouselSlide
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 // Kotlin: `class DefaultCarouselRepository(...) : CarouselRepository` — the primary
 // constructor parameter and the supertype are declared right on the class header. This
@@ -12,7 +14,23 @@ import com.example.clonedwink.data.model.CarouselSlide
 // Android: it takes a `Context` because loading localized strings (context.getString) and
 // resolving drawable resource IDs both go through the app's Context. This is a hardcoded
 // data source today; a real app would instead take a Retrofit service or a database DAO here.
-class DefaultCarouselRepository(private val context: Context) : CarouselRepository {
+//
+// Kotlin/Android: `@Inject constructor(...)` is what makes this class *self-sufficient* for
+// Hilt — it never needs a matching `@Provides` function anywhere, because this annotation tells
+// Hilt "here's how to build one: call this constructor." `@ApplicationContext` is a Hilt
+// *qualifier* on the `Context` parameter — plain `Context` is ambiguous (an Activity context and
+// the single app-wide context are both a `Context`), so this tells Hilt specifically to supply
+// the long-lived application Context, which is safe to hold in a singleton-scoped repository
+// (see di/RepositoryModule.kt) without risking an Activity-context leak.
+class DefaultCarouselRepository @Inject constructor(
+    // Kotlin: `@param:ApplicationContext` (rather than bare `@ApplicationContext`) pins this
+    // annotation to the constructor *parameter* specifically — Dagger/Hilt need to see it there
+    // at compile time to match this dependency to the `@ApplicationContext Context` binding.
+    // Kotlin's default target for a constructor-property annotation like this is changing in a
+    // future release (see the compiler warning this silences), so being explicit keeps today's
+    // behavior either way.
+    @param:ApplicationContext private val context: Context,
+) : CarouselRepository {
 
     // Kotlin: `override` is required whenever a function fulfills an interface/superclass
     // member — the compiler rejects it if the signature doesn't actually match one.

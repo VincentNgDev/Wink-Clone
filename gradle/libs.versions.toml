@@ -19,6 +19,23 @@ coroutinesTest = "1.10.2"
 # pins it to the same KGP release AGP 9.3.2 already brings onto the classpath under the hood.
 kotlin = "2.2.10"
 composeBom = "2026.08.00"
+# Android: Hilt is Google's DI (dependency injection) framework built on top of Dagger — see
+# .claude/lessons/12-2026-09-12-hilt-dependency-injection.md for the full walkthrough of what
+# it replaces (the hand-written viewModelFactory { initializer { ... } } blocks) and why.
+hilt = "2.59.2"
+# Kotlin: KSP ("Kotlin Symbol Processing") is a compiler plugin API for code generation — Hilt
+# uses it to generate the DI wiring code at build time instead of Dagger/Hilt doing reflection
+# at runtime. Its version string is "<Kotlin version>-<KSP release>", so this must track
+# whatever `kotlin` above is pinned to (2.2.10) — bumping one without the other breaks the build.
+ksp = "2.2.10-2.0.2"
+# Android: Navigation Compose — lets a single Activity host multiple composable "screens" and
+# switch between them via a NavHost/NavController instead of each screen being its own Activity
+# reached by an Intent. See .claude/lessons/07-2026-09-08-navigation.md for the full comparison.
+navigationCompose = "2.9.7"
+# Android: the bridge between Hilt and Compose ViewModels — it's what makes the
+# `hiltViewModel()` composable function available, which scopes a @HiltViewModel to a single
+# NavBackStackEntry instead of to a whole Activity (the old `by viewModels()` scope).
+hiltLifecycleViewmodelCompose = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,8 +63,14 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel-compose", version.ref = "hiltLifecycleViewmodelCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
