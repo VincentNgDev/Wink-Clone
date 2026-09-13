@@ -1,5 +1,25 @@
 # Lesson: What is the app's "main entry point"?
 
+## Update (2026-09-13): the launcher Activity is now `MainActivity`, and there's an `Application` class
+
+Since `.claude/changes/2026-09-13-migrate-to-navigation-compose.md`, the launcher
+`<activity>` below is `.ui.MainActivity`, not `.ui.landing.LandingActivity` —
+`LandingActivity` was deleted along with the two-Activity setup (see
+[[13-2026-09-13-navigation-compose-vs-multi-activity]]). `MainActivity.onCreate()` calls
+`setContent { WinkNavHost() }`, and *that* NavHost — not the manifest — decides which
+screen (Landing, then Home) shows first at runtime; the manifest only decides which
+single Activity the OS launches.
+
+The "Application class (not used here)" section below is also out of date: since
+`.claude/changes/2026-09-12-add-hilt-dependency-injection.md`, this project *does*
+declare one — `WinkApplication`, registered via `android:name=".WinkApplication"` —
+so Hilt's dependency graph is set up before `MainActivity` (or anything else) runs. See
+[[02-2026-09-08-android-manifest]] and [[12-2026-09-12-hilt-dependency-injection]].
+
+The rest of this lesson's *mechanics* (why there's no `main()`, how the OS reads the
+manifest, the lifecycle handoff) are all still accurate — only the specific class names
+below (`LandingActivity`) are stale.
+
 ## The short answer
 
 There is **no `main()` function** in an Android app the way there is in a JVM/CLI

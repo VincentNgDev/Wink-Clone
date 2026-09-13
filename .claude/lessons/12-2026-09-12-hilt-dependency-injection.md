@@ -139,6 +139,30 @@ connection into the app-wide dependency container in the first place, so `by vie
 has somewhere to ask for a `LandingViewModel` from. Every Activity/Fragment that wants a
 `@HiltViewModel` needs this annotation, or Hilt has no way to reach it.
 
+### Update (2026-09-13): `by viewModels()` on `LandingActivity` is gone — see `hiltViewModel()`
+
+The very next day, `.claude/changes/2026-09-13-migrate-to-navigation-compose.md` deleted
+`LandingActivity`/`HomeActivity` entirely — see
+[[13-2026-09-13-navigation-compose-vs-multi-activity]]. The `@HiltViewModel` +
+`@Inject constructor` half above is completely unchanged (it's still exactly how
+`LandingViewModel`/`HomeViewModel` declare their dependencies); only the *consumer* side
+changed:
+
+- `@AndroidEntryPoint` moved from `LandingActivity`/`HomeActivity` onto the app's single
+  `MainActivity` — still required for the same reason (it's the connection point into
+  Hilt's dependency container), just needed once for the whole app instead of once per
+  screen.
+- `by viewModels()` is gone. `ui/navigation/WinkNavHost.kt` now calls
+  `val viewModel: LandingViewModel = hiltViewModel()` (from
+  `androidx.hilt.lifecycle.viewmodel.compose`) inside each destination's
+  `composable { }` block. Under the hood this still goes through the same
+  Hilt-generated ViewModel factory `by viewModels()` used — `hiltViewModel()` is just the
+  Compose-and-Navigation-aware way to ask for one, scoped to that route's
+  `NavBackStackEntry` (which acts as the `ViewModelStoreOwner`) instead of to a whole
+  Activity. See [[05-2026-09-08-mvvm-architecture]]'s rewritten wiring section for the
+  current code, and [[03-2026-09-08-android-lifecycle]] for what changed about ViewModel
+  scoping specifically.
+
 ## In layman's terms: the classic coffee-maker example
 
 Strip away the Android/Kotlin specifics and DI is a simple idea, best seen with the example
@@ -199,8 +223,12 @@ WinkApplication (@HiltAndroidApp)
 RepositoryModule (@Module, @InstallIn(SingletonComponent::class))
     │  "CarouselRepository → DefaultCarouselRepository" binding registered
     ▼
-LandingActivity (@AndroidEntryPoint)
-    │  by viewModels() asks the container for a LandingViewModel
+MainActivity (@AndroidEntryPoint)
+    │  the one Activity that gives the whole app a connection into the container
+    ▼
+WinkNavHost's Landing composable { } block
+    │  hiltViewModel() asks the container for a LandingViewModel, scoped to this route's
+    │  NavBackStackEntry
     ▼
 LandingViewModel (@HiltViewModel, @Inject constructor)
     │  Hilt sees it needs a CarouselRepository, looks up the binding above
@@ -209,12 +237,17 @@ DefaultCarouselRepository (@Inject constructor)
     │  Hilt sees it needs an @ApplicationContext Context, which Hilt provides
     │  out of the box (no @Binds needed — Hilt ships this binding for free)
     ▼
-LandingViewModel is constructed with a real DefaultCarouselRepository and handed to
-LandingActivity's `viewModel` property
+LandingViewModel is constructed with a real DefaultCarouselRepository and handed back to
+WinkNavHost as the return value of hiltViewModel()
 ```
 
-`HomeViewModel`/`HomeActivity`/`DefaultHomeRepository` follow the exact same shape, one
-level down (`HomeRepository` → `DefaultHomeRepository`, in the same `RepositoryModule`).
+(The `LandingActivity`/`by viewModels()` version of this diagram — accurate when this
+lesson was first written, a day before the navigation-compose migration — is preserved
+in the Update note on `@HiltViewModel` + `@AndroidEntryPoint` above.)
+
+`HomeViewModel`/`DefaultHomeRepository` follow the exact same shape, one level down
+(`HomeRepository` → `DefaultHomeRepository`, in the same `RepositoryModule`, requested
+from `WinkNavHost`'s Home destination instead of Landing's).
 
 ## Component scopes: `SingletonComponent` is not the only one
 
@@ -337,9 +370,10 @@ actually executes (a runtime exception the compiler can't catch). Hilt/Dagger is
 **compile-time**: the KSP annotation processor (`app/build.gradle.kts`) reads every
 `@Inject`/`@Binds`/`@Module` at build time and *generates real Kotlin/Java source code* that
 does the wiring — so a missing binding (say, if `RepositoryModule` forgot the
-`HomeRepository` mapping) is a **build failure**, not a crash that only shows up once
-`HomeActivity` happens to launch. That compile-time graph validation is the main thing Hilt
-buys over a plain runtime container like `Microsoft.Extensions.DependencyInjection`.
+`HomeRepository` mapping) is a **build failure**, not a crash that only shows up once the
+Home destination happens to be navigated to. That compile-time graph validation is the
+main thing Hilt buys over a plain runtime container like
+`Microsoft.Extensions.DependencyInjection`.
 
 ## What did *not* change
 

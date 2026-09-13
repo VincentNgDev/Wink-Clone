@@ -7,6 +7,29 @@ current page (`TabLayout` + `TabLayoutMediator`), and an **auto-scroll loop**. R
 [[04-2026-09-08-drawing-the-ui]] first if XML layouts/inflation/`R.*` aren't familiar yet —
 this lesson assumes that foundation.
 
+## Update: rebuilt in Compose — `ViewPager2`/`CarouselAdapter`/`TabLayout` are gone
+
+`.claude/changes/2026-09-08-rebuild-landing-in-compose-glassmorphism.md` replaced every
+piece below with a Compose equivalent, in `ui/landing/LandingScreen.kt`'s
+`SlideCarousel`/`GlassSlideCard` and the shared `ui/components/CarouselAutoScroll.kt` /
+`CarouselDotIndicator.kt` (extracted later — see
+[[11-2026-09-10-reusable-components]]):
+
+| This lesson (historical) | Current Compose equivalent |
+|---|---|
+| `ViewPager2` + XML | `HorizontalPager` (`androidx.compose.foundation.pager`) |
+| `CarouselAdapter`/`ListAdapter`/`ViewHolder` recycling | `HorizontalPager`'s own lazy content lambda — no adapter/ViewHolder class needed; you just write `{ page -> GlassSlideCard(slides[page]) }` |
+| `TabLayout` + `TabLayoutMediator` | `CarouselDotIndicator` — a small composable reading `pagerState.currentPage` directly |
+| Manual `PageTransformer` for the peek/shrink effect | `Modifier.graphicsLayer { }` reading `pagerState.currentPageOffsetFraction`, applied per-page inside the `HorizontalPager` content lambda |
+| Auto-scroll `Handler`/`Runnable` loop | `CarouselAutoScroll` — a composable wrapping `LaunchedEffect` + `repeatOnLifecycle(STARTED)` + `pagerState.animateScrollToPage(...)` |
+
+The concepts this lesson teaches — why a swipeable list needs *some* recycling/lazy
+strategy instead of inflating every page up front, what a page transformer/peek effect
+is doing conceptually, why auto-scroll needs to pause while backgrounded — are all still
+the right mental model; only the concrete APIs changed. See
+[[08-2026-09-09-jetpack-compose-and-lifecycle]] for Compose fundamentals and
+`ui/landing/LandingScreen.kt`'s `SlideCarousel` for the real, current code.
+
 ## Piece 1: `ViewPager2` — the swipeable container
 
 Declared in `res/layout/activity_landing.xml`:

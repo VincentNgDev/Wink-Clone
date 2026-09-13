@@ -7,13 +7,31 @@ reads this one XML file. If something isn't declared here, the OS behaves as if 
 doesn't exist, even if the Kotlin class compiles fine (a classic beginner crash is
 "Activity not found" from forgetting to add a new screen here).
 
-This project's manifest, in full:
+## Update (2026-09-13): single Activity, plus a registered `Application` class
+
+This project moved to a **single-Activity architecture** in
+`.claude/changes/2026-09-13-migrate-to-navigation-compose.md` (see
+[[13-2026-09-13-navigation-compose-vs-multi-activity]]) — `LandingActivity` and
+`HomeActivity` were both deleted in favor of one `MainActivity` hosting every screen as
+a composable destination. There's now exactly one `<activity>` entry, and it never
+grows a second one as more screens are added — new screens are declared in
+`ui/navigation/WinkDestination.kt`/`WinkNavHost.kt` instead (see
+[[10-2026-09-10-project-and-folder-structure]] for where those live).
+
+The manifest also gained `android:name=".WinkApplication"` on `<application>`, from
+`.claude/changes/2026-09-12-add-hilt-dependency-injection.md` — see
+[[12-2026-09-12-hilt-dependency-injection]] and the `## android:name` — a custom
+`Application` subclass section further down, which this lesson originally described as
+"not used here" before Hilt needed one.
+
+This project's manifest, in full, as it stands now:
 
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".WinkApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -24,7 +42,7 @@ This project's manifest, in full:
         android:theme="@style/Theme.Clonedwink">
 
         <activity
-            android:name=".ui.landing.LandingActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,6 +54,10 @@ This project's manifest, in full:
 
 </manifest>
 ```
+
+The sections below were written against the pre-migration, two-Activity manifest (shown
+with `LandingActivity` as the sole entry) — the general explanation of each tag/attribute
+is still accurate; only the concrete class names changed.
 
 ## `<manifest>` — the root tag
 
@@ -114,15 +136,24 @@ Intent filters aren't limited to launching — they're the same general mechanis
 to declare "I can handle opening a URL," "I can handle sharing an image," etc. This
 project only uses the one for launching.
 
-## The `Application` class — not used here, but worth knowing
+## The `Application` class
 
-You can optionally point `<application android:name="...">` at your own subclass of
+You can point `<application android:name="...">` at your own subclass of
 `android.app.Application`. Its `onCreate()` runs once per process, *before* any Activity
 — the common place for app-wide setup (dependency-injection container init, crash
-reporting, logging setup). This project's `<application>` tag has no `android:name`, so
-Android just uses the plain default `Application` class and does nothing extra before
-`LandingActivity` starts. If this app later adds something that needs to run once at
-process startup, that's the tag to add a `android:name=".SomeApplication"` to.
+reporting, logging setup).
+
+**Update (2026-09-13):** this project now does exactly that —
+`android:name=".WinkApplication"` points at `WinkApplication.kt`
+(`@HiltAndroidApp class WinkApplication : Application()`), added in
+`.claude/changes/2026-09-12-add-hilt-dependency-injection.md`. `@HiltAndroidApp` is what
+triggers Hilt's code generation for the whole app and creates the top-level dependency
+container every `@AndroidEntryPoint`/`@HiltViewModel` class pulls from — see
+[[12-2026-09-12-hilt-dependency-injection]] for the full mechanics. Before that change,
+this tag had no `android:name` and Android just used the plain default `Application`
+class, doing nothing extra before the launcher Activity started — that's still the
+right mental model for *why* the tag exists, just no longer this project's current
+state.
 
 ## Where things are declared *outside* the manifest (a common confusion)
 

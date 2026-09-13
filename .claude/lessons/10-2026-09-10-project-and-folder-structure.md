@@ -8,6 +8,27 @@ folder at the root of the repo and under `app/`, answering "what is this, and wh
 exist" for each, so opening the project tree in Android Studio stops looking like a wall
 of unfamiliar names.
 
+## Update: two packages added since this lesson was written
+
+`com.example.clonedwink.java/` gained two top-level packages this tour predates:
+
+- **`di/`** — Hilt modules (`di/RepositoryModule.kt`), added in
+  `.claude/changes/2026-09-12-add-hilt-dependency-injection.md`. This is the `di/`
+  package `.claude/rules/folder-structure.md` already reserved a spot for; it just
+  wasn't populated yet when this lesson was written. See
+  [[12-2026-09-12-hilt-dependency-injection]].
+- **`ui/navigation/`** — `WinkDestination.kt` (route definitions) and `WinkNavHost.kt`
+  (the `NavHost` wiring every screen's ViewModel + composable together), added in
+  `.claude/changes/2026-09-13-migrate-to-navigation-compose.md`. It sits alongside
+  `ui/landing/`, `ui/home/`, and `ui/components/` — still the View layer, but owning the
+  cross-screen navigation graph rather than any one screen. See
+  [[13-2026-09-13-navigation-compose-vs-multi-activity]].
+
+Both are still `app/src/main/java/com/example/clonedwink/` subpackages, so the
+Gradle/resource/test material below (which this lesson is really about) is unaffected —
+this is just a heads-up that the `java/...` line in the tree diagram below now has more
+under it than [[05-2026-09-08-mvvm-architecture]] originally showed.
+
 ## The big picture: two layers of "project"
 
 An Android Studio project is a **Gradle project** (Gradle is the build tool — it compiles

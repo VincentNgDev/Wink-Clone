@@ -40,8 +40,9 @@ import com.example.clonedwink.viewmodel.home.HomeUiState
 
 // Android/Kotlin: this is the "View" half of the home screen's MVVM split, exactly the same
 // stateless-composable pattern LandingScreen.kt uses — see that file's opening comment for the
-// full explanation. HomeActivity.kt owns the HomeViewModel and is the only thing that touches
-// it directly; everything here only ever receives a HomeUiState snapshot plus event lambdas.
+// full explanation. `ui/navigation/WinkNavHost.kt` owns the HomeViewModel (via `hiltViewModel()`)
+// and is the only thing that touches it directly; everything here only ever receives a
+// HomeUiState snapshot plus event lambdas.
 
 /**
  * The full home screen: a pink gradient header with a floating "My WINK+ Points" card, four
@@ -80,9 +81,9 @@ fun HomeScreen(
             .background(colorResource(R.color.background)),
     ) {
         // Android: a full-bleed pink->purple gradient behind everything, fixed height — drawn
-        // *before* the Scaffold below so it sits behind the status bar too (this app calls
-        // enableEdgeToEdge() in HomeActivity), matching the reference screenshot's immersive
-        // colored header instead of a plain white status bar strip.
+        // *before* the Scaffold below so it sits behind the status bar too (MainActivity calls
+        // enableEdgeToEdge() once for the whole app), matching the reference screenshot's
+        // immersive colored header instead of a plain white status bar strip.
         Box(
             modifier = Modifier
                 .fillMaxWidth()

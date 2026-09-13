@@ -5,6 +5,43 @@ the **Activity lifecycle** (a screen being created/shown/hidden/destroyed by the
 the **ViewModel lifecycle** (state that survives an Activity being recreated). This
 project's `LandingActivity` + `LandingViewModel` pair is a good concrete example of both.
 
+## Update (2026-09-13): single Activity now; ViewModel scoping moved to the nav back stack
+
+Two things below have changed since this lesson was written, both from
+`.claude/changes/2026-09-13-migrate-to-navigation-compose.md` — see
+[[13-2026-09-13-navigation-compose-vs-multi-activity]] for the full picture:
+
+- **There's only one Activity instance for the whole app now**, `MainActivity` — not one
+  per screen. Everything in section 1 about `onCreate`/`onStart`/`onResume`/rotation
+  still happens exactly as described, it just now only ever happens to `MainActivity`,
+  never to a per-screen `LandingActivity`/`HomeActivity` (both deleted).
+- **Section 1's manual `lifecycleScope.launch { repeatOnLifecycle(STARTED) { viewModel.uiState.collect { } } }`
+  pattern is gone from this codebase.** `LandingScreen`/`HomeScreen` are Compose
+  functions now (see [[08-2026-09-09-jetpack-compose-and-lifecycle]]), and
+  `WinkNavHost.kt` uses `viewModel.uiState.collectAsStateWithLifecycle()` instead — a
+  Compose-aware helper that does the same "only collect while at least `STARTED`,
+  pause/resume automatically" job as `repeatOnLifecycle`, just as one function call
+  instead of a manually-nested block. The *reason* it exists (don't do work, or hold a
+  collector, while the screen isn't visible) hasn't changed — only the API shape has.
+- **Section 2's ViewModel scoping — "survives what the Activity doesn't" via
+  `by viewModels { }`'s retained store — is now scoped to the nav back stack instead of
+  the Activity.** `LandingViewModel` is obtained via `hiltViewModel()` inside
+  `WinkNavHost`'s Landing `composable { }` block: it's created the first time that route
+  is navigated to, survives rotation exactly as before (same underlying `ViewModelStore`
+  mechanism), but is cleared when that `NavBackStackEntry` is popped off the back
+  stack — which, in this app, happens to `LandingViewModel` almost immediately (Landing
+  pops itself off on `popUpTo(...) { inclusive = true }` when navigating to Home), rather
+  than only "when the Activity finishes for good." The underlying idea — a ViewModel
+  outlives Activity recreation but not the logical screen going away — is unchanged;
+  only *what counts as "the logical screen going away"* moved from "Activity finishes"
+  to "back-stack entry is popped."
+
+The sections below describe the pre-migration, one-Activity-per-screen,
+manual-`repeatOnLifecycle` code — still an accurate description of *how those APIs work*
+in general (this is genuinely useful knowledge for any Android code still using Views or
+holding LiveData/Flow with the manual pattern), just no longer what this project's own
+code currently does.
+
 ## 1. The Activity lifecycle
 
 An Activity represents one screen. The **OS**, not your code, decides when to

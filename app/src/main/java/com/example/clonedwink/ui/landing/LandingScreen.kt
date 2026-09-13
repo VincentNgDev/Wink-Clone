@@ -68,12 +68,12 @@ import com.example.clonedwink.viewmodel.landing.LandingUiState
 import kotlin.math.absoluteValue
 
 // Android/Kotlin: this whole file is the "View" half of the landing screen's MVVM split, but
-// as @Composable *functions* instead of an Activity + XML layout. LandingActivity.kt still owns
-// the LandingViewModel (construction, `by viewModels {}`, surviving rotation) and is the only
-// thing that touches it directly; everything below only ever receives a plain LandingUiState
-// snapshot and event lambdas, exactly like folder-structure.md's "a ui/ file should never
-// import from data/ directly — it should only talk to its ViewModel" rule, just expressed with
-// functions/parameters instead of a class hierarchy.
+// as @Composable *functions* instead of an Activity + XML layout. `ui/navigation/WinkNavHost.kt`
+// owns the LandingViewModel (obtained via `hiltViewModel()`, scoped to this route's back-stack
+// entry) and is the only thing that touches it directly; everything below only ever receives a
+// plain LandingUiState snapshot and event lambdas, exactly like folder-structure.md's "a ui/
+// file should never import from data/ directly — it should only talk to its ViewModel" rule,
+// just expressed with functions/parameters instead of a class hierarchy.
 
 private const val AUTO_SCROLL_INTERVAL_MS = 4000L
 private const val MIN_PEEK_SCALE = 0.85f
@@ -85,11 +85,12 @@ private const val MIN_PEEK_ALPHA = 0.6f
  * see .claude/references/wink-*.png for the visual style this is matching (bold pink brand
  * color, rounded type, glass/card surfaces floating over color).
  *
- * @param onGetStartedClick fired when the CTA button is tapped; LandingActivity decides what
- *   that means (today, nothing — no next screen exists yet), keeping that decision in the View
- *   layer rather than baking navigation into this stateless composable.
+ * @param onGetStartedClick fired when the CTA button is tapped; WinkNavHost's Landing
+ *   destination decides what that means (navigating to Home, popping Landing off the back
+ *   stack), keeping that decision in the View layer rather than baking navigation into this
+ *   stateless composable.
  * @param onErrorShown fired once, the first time [uiState] reports [LandingUiState.hasError] —
- *   LandingActivity uses it to show the same Toast the old View-based implementation did.
+ *   WinkNavHost's Landing destination uses it to show a Toast.
  */
 @Composable
 fun LandingScreen(
@@ -127,9 +128,10 @@ fun LandingScreen(
                 // below an already-pinned min, so the cap below would silently do nothing.
                 .fillMaxHeight()
                 // Android: `WindowInsets.safeDrawing` covers the status bar, nav bar, and
-                // display cutouts. LandingActivity calls `enableEdgeToEdge()`, which lets our
-                // gradient draw *behind* the system bars for an immersive edge-to-edge look;
-                // this padding then keeps the actual title/CTA content clear of them.
+                // display cutouts. MainActivity calls `enableEdgeToEdge()` once for the whole
+                // app, which lets our gradient draw *behind* the system bars for an immersive
+                // edge-to-edge look; this padding then keeps the actual title/CTA content clear
+                // of them.
                 .windowInsetsPadding(WindowInsets.safeDrawing)
                 // Android: this screen is designed phone-first (a single narrow column of
                 // cards). Without a cap, the same layout on a tablet/foldable stretches the

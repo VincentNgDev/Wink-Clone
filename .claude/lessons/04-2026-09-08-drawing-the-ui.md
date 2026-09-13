@@ -5,6 +5,25 @@ because Android splits "describe what the screen looks like" (XML) from "put it 
 screen and keep it updated" (Kotlin) more strictly than most frameworks. Walking through
 it top-to-bottom using this project's actual landing screen.
 
+## Update: superseded by Jetpack Compose
+
+The XML-layout-and-`findViewById` system this lesson walks through was replaced for the
+landing screen in `.claude/changes/2026-09-08-rebuild-landing-in-compose-glassmorphism.md`,
+and every screen since (Home, and any new one) has been built in Compose from the start —
+see [[08-2026-09-09-jetpack-compose-and-lifecycle]], which opens with a direct
+old-vs-new comparison table. `activity_landing.xml`/`item_carousel_slide.xml` and the
+`LandingActivity`/`CarouselAdapter` classes this lesson references no longer exist in
+the codebase.
+
+This lesson is still worth reading, for two reasons: the **View system is still fully
+supported Android**, so you'll meet it in other codebases/tutorials, and several ideas
+here carry over unchanged into Compose — `R`/resource IDs (§3), `res/values/` and why
+hardcoded strings/colors are banned, and `themes.xml`/`Theme.Clonedwink` (the
+`ClonedWinkTheme` Compose wrapper in [[08-2026-09-09-jetpack-compose-and-lifecycle]]
+reads from the exact same theme resource). Read this first if XML/`R`/resources are
+totally unfamiliar, then read [[08-2026-09-09-jetpack-compose-and-lifecycle]] for how
+this project actually draws its UI today.
+
 ## Step 1: Layouts are XML files, not Kotlin code
 
 `app/src/main/res/layout/activity_landing.xml` *describes* the landing screen as a tree

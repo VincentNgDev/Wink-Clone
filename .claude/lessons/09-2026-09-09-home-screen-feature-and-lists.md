@@ -8,7 +8,34 @@ know you actually understood them) plus a handful of genuinely new pieces: real
 Activity-to-Activity navigation, Compose's **lazy list** composables, and a
 `ModalBottomSheet`.
 
-## 1. Navigation is no longer hypothetical
+## Update (2026-09-13): `HomeActivity` is gone; Home is a NavHost destination, DI'd by Hilt
+
+Two things below no longer match the code, both superseded the same way
+[[07-2026-09-08-navigation]] was — see
+`.claude/changes/2026-09-13-migrate-to-navigation-compose.md` and
+`.claude/changes/2026-09-12-add-hilt-dependency-injection.md`:
+
+- **Section 1's `Intent`/`startActivity`/`finish()` navigation** is gone. `HomeActivity`
+  doesn't exist anymore; Home is a `composable(WinkDestination.Home.route) { }` block
+  inside `ui/navigation/WinkNavHost.kt`, reached via
+  `navController.navigate(WinkDestination.Home.route) { popUpTo(...) { inclusive = true } }`
+  from the Landing destination — same end effect (Landing removed from the back stack,
+  Back from Home exits the app), no `Intent`/`Context`/manifest entry involved. See
+  [[13-2026-09-13-navigation-compose-vs-multi-activity]] for the full model.
+- **Section 2's `viewModelFactory` passing `DefaultHomeRepository(applicationContext)`**
+  is also gone. `HomeViewModel` is now `@HiltViewModel`-annotated with an
+  `@Inject constructor(private val homeRepository: HomeRepository)`, and
+  `WinkNavHost`'s Home destination gets an instance with a plain
+  `val viewModel: HomeViewModel = hiltViewModel()` — no factory lambda, no
+  `applicationContext`, no Activity involved at all. See
+  [[12-2026-09-12-hilt-dependency-injection]] and
+  [[05-2026-09-08-mvvm-architecture]]'s rewritten wiring section for the mechanics.
+
+Everything else below — the Repository/ViewModel/View shape repeating for a second
+feature, `LazyColumn`/`LazyRow`, `ModalBottomSheet`, placeholder gradients — is still
+accurate; only *how the screen is reached and how its ViewModel is constructed* changed.
+
+## 1. Navigation is no longer hypothetical (historical — see the Update above)
 
 [[07-2026-09-08-navigation]] described the `Intent` + `startActivity` model as a
 *hypothetical* — at the time, `LandingActivity` was the only screen, and its
@@ -62,11 +89,13 @@ failure becomes `uiState.hasError = true` instead of crashing. If you can read
 `HomeViewModel.kt` and `LandingViewModel.kt` side by side and predict what each line does
 before checking, [[05-2026-09-08-mvvm-architecture]] has actually sunk in.
 
-One real difference worth noting: `HomeActivity`'s `viewModelFactory` passes
-`DefaultHomeRepository(applicationContext)` (`HomeActivity.kt:29-33`) — same
-constructor-injection-via-factory pattern as `LandingActivity`, because `HomeViewModel`,
-like `LandingViewModel`, needs a repository instance and has no no-arg constructor for
-the default `by viewModels()` delegate to fall back on.
+(Historical — see the Update at the top of this lesson.) One real difference worth
+noting at the time: `HomeActivity`'s `viewModelFactory` passed
+`DefaultHomeRepository(applicationContext)`, same constructor-injection-via-factory
+pattern as `LandingActivity`, because `HomeViewModel`, like `LandingViewModel`, needs a
+repository instance and had no no-arg constructor for the default `by viewModels()`
+delegate to fall back on. Hilt now supplies that constructor argument instead — see the
+Update section above.
 
 ## 3. `LazyColumn` — Compose's version of a scrolling list
 

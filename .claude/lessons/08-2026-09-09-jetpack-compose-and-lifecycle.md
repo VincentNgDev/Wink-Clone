@@ -331,7 +331,32 @@ the resulting fresh Composition renders that state on its very first composition
 Compare this to the old system, where `observeUiState()` had to manually re-push every
 field into every already-inflated view by hand.
 
-## 7. Putting it all together: this project's landing screen, end to end
+## Update (2026-09-13): `LandingActivity` is gone — the diagram/table below are historical
+
+Sections 6-7 and the cheat sheet below all narrate `LandingActivity.kt` by name and line
+number (`by viewModels { }`, `enableEdgeToEdge()`, `setContent { }`, `collectAsStateWithLifecycle()`
+all inside it). Since `.claude/changes/2026-09-13-migrate-to-navigation-compose.md`, that
+class doesn't exist:
+
+- `enableEdgeToEdge()` and `setContent { ClonedWinkTheme { WinkNavHost() } }` now live in
+  `ui/MainActivity.kt` — called once for the whole app, not once per screen.
+- `by viewModels { }` is gone. `LandingViewModel` is now obtained via
+  `val viewModel: LandingViewModel = hiltViewModel()` inside `WinkNavHost.kt`'s Landing
+  `composable { }` block — see [[12-2026-09-12-hilt-dependency-injection]] for how Hilt
+  supplies the constructor argument, and [[05-2026-09-08-mvvm-architecture]]'s rewritten
+  wiring section for the full current picture.
+- `collectAsStateWithLifecycle()` also moved into that same `WinkNavHost.kt` block —
+  the *concept* (a StateFlow becoming lifecycle-aware Compose `State`) is identical to
+  what's described below, it's just called from the NavHost's destination lambda instead
+  of the Activity body.
+
+Everything else about *how Compose itself works* — recomposition, `LaunchedEffect`,
+`remember`, the Composition lifecycle, `repeatOnLifecycle` for pausing background work —
+is unaffected by this move and still accurate. See
+[[13-2026-09-13-navigation-compose-vs-multi-activity]] for the full navigation-model
+explanation.
+
+## 7. Putting it all together: this project's landing screen, end to end (historical file/line references — see the Update above)
 
 ```
 OS creates LandingActivity → onCreate()
